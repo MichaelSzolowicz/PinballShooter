@@ -5,6 +5,7 @@
 #include "PinballCharacter.generated.h"
 
 class USphereComponent;
+class UPinballInputConfig;
 
 UCLASS()
 class PINBALLSHOOTER_API APinballCharacter : public APawn
@@ -12,6 +13,9 @@ class PINBALLSHOOTER_API APinballCharacter : public APawn
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UPinballInputConfig> PinballInputConfig;
+
 	UPROPERTY(EditDefaultsOnly, Category = "PhysicsBody")
 	TObjectPtr<USphereComponent> PhysicsBody;
 
