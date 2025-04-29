@@ -6,6 +6,17 @@
 
 class USphereComponent;
 class UPinballInputConfig;
+class UInputAction;
+
+USTRUCT()
+struct FPinballInputActions
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UInputAction> Move;
+};
 
 UCLASS()
 class PINBALLSHOOTER_API APinballCharacter : public APawn
@@ -13,11 +24,14 @@ class PINBALLSHOOTER_API APinballCharacter : public APawn
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UPinballInputConfig> PinballInputConfig;
+	UPROPERTY(EditDefaultsOnly, Category = "PinballInput")
+	FPinballInputActions InputActions;
 
-	UPROPERTY(EditDefaultsOnly, Category = "PhysicsBody")
+	UPROPERTY(EditDefaultsOnly, Category = "PinballPhysics")
 	TObjectPtr<USphereComponent> PhysicsBody;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PinballInput")
+	float MovementInputScale;
 
 public:
 	APinballCharacter();
