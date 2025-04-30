@@ -1,6 +1,7 @@
 #include "PinballCharacter/PinballCharacter.h"
 
 #include "Components/SphereComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 APinballCharacter::APinballCharacter()
 {
@@ -11,21 +12,43 @@ APinballCharacter::APinballCharacter()
 	PhysicsBody->SetSimulatePhysics(true);
 }
 
+void APinballCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	checkf(NewController, TEXT("Possessed by invalid controller."));
+
+	APlayerController* PlayerController = Cast<APlayerController>(NewController);
+	checkf(PlayerController, TEXT("Could not get player controller."));
+
+	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	checkf(LocalPlayer, TEXT("Could not get local player."));
+
+	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	checkf(EnhancedInputSubsystem, TEXT("Could not get enhanced input local player subssytem."));
+
+	EnhancedInputSubsystem->AddMappingContext(PinballCharacterInputMappingContext, 0);
+}
+
+void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
 void APinballCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-void APinballCharacter::Tick(float DeltaTime)
+void APinballCharacter::Move(const FInputActionValue& InputActionValue)
 {
-	Super::Tick(DeltaTime);
 
 }
 
-void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APinballCharacter::Tick(float DeltaTime)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::Tick(DeltaTime);
 
 }
 
