@@ -11,9 +11,11 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 
-
+/**
+* Defines actions the main type of player pawn can perform.
+*/
 USTRUCT()
-struct FPinballInputActions
+struct FPinballCharacterInputActions
 {
 	GENERATED_BODY()
 
@@ -22,6 +24,9 @@ public:
 	TObjectPtr<UInputAction> Move;
 };
 
+/**
+* Defines the main type of player character and its abilities.
+*/
 UCLASS()
 class PINBALLSHOOTER_API APinballCharacter : public APawn
 {
@@ -29,30 +34,35 @@ class PINBALLSHOOTER_API APinballCharacter : public APawn
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "PinballInput")
-	TObjectPtr<UInputMappingContext> PinballCharacterInputMappingContext;
+	TObjectPtr<UInputMappingContext> InputMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, Category = "PinballInput")
-	FPinballInputActions InputActions;
-
-	UPROPERTY(EditDefaultsOnly, Category = "PinballPhysics")
-	TObjectPtr<USphereComponent> PhysicsBody;
+	UPROPERTY(EditDefaultsOnly, Category = "PinballInput", meta = (ShowOnlyInnerProperties))
+	FPinballCharacterInputActions InputActions;
 
 	UPROPERTY(EditDefaultsOnly, Category = "PinballInput")
 	float MovementInputScale;
 
+	UPROPERTY(EditDefaultsOnly, Category = "PinballPhysics")
+	TObjectPtr<USphereComponent> PhysicsBody;
+
 public:
 	APinballCharacter();
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	void Move(const FInputActionValue& InputActionValue);
-
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+protected:	
+	/**
+	* Implementation for movement input.
+	* @param InputActionValue
+	*/
+	void Move(const FInputActionValue& InputActionValue);
 
 };

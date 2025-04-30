@@ -13,10 +13,23 @@ APinballCharacter::APinballCharacter()
 	PhysicsBody->SetSimulatePhysics(true);
 }
 
+void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// Setup input actions for enhanced input.
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	checkf(EnhancedInputComponent, TEXT("Could not get enhanced input component."));
+
+	if (InputActions.Move)
+		EnhancedInputComponent->BindAction(InputActions.Move, ETriggerEvent::Triggered, this, &APinballCharacter::Move);
+}
+
 void APinballCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	// Setup input mapping context for enhanced input.
 	checkf(NewController, TEXT("Possessed by invalid controller."));
 
 	APlayerController* PlayerController = Cast<APlayerController>(NewController);
@@ -28,18 +41,7 @@ void APinballCharacter::PossessedBy(AController* NewController)
 	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	checkf(EnhancedInputSubsystem, TEXT("Could not get enhanced input local player subssytem."));
 
-	EnhancedInputSubsystem->AddMappingContext(PinballCharacterInputMappingContext, 0);
-}
-
-void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	checkf(EnhancedInputComponent, TEXT("Could not get enhanced input component."));
-
-	if (InputActions.Move)
-		EnhancedInputComponent->BindAction(InputActions.Move, ETriggerEvent::Triggered, this, &APinballCharacter::Move);
+	EnhancedInputSubsystem->AddMappingContext(InputMappingContext, 0);
 }
 
 void APinballCharacter::BeginPlay()
@@ -48,20 +50,18 @@ void APinballCharacter::BeginPlay()
 	
 }
 
+void APinballCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
 void APinballCharacter::Move(const FInputActionValue& InputActionValue)
 {
 	if (PhysicsBody) {
 		FVector Force = FVector(InputActionValue.Get<FVector2D>(), 0) * MovementInputScale;
 
 		PhysicsBody->AddForce(Force);
-
-		UE_LOG(LogTemp, Display, TEXT("APinballCharacter move"));
 	}
-}
-
-void APinballCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
