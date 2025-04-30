@@ -43,7 +43,11 @@ void APinballCharacter::BeginPlay()
 
 void APinballCharacter::Move(const FInputActionValue& InputActionValue)
 {
+	if (PhysicsBody) {
+		FVector Force = FVector(InputActionValue.Get<FVector2D>(), 0) * MovementInputScale;
 
+		PhysicsBody->AddForce(Force);
+	}
 }
 
 void APinballCharacter::Tick(float DeltaTime)
