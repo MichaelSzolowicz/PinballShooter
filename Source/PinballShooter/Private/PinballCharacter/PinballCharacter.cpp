@@ -2,6 +2,7 @@
 
 #include "Components/SphereComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 APinballCharacter::APinballCharacter()
 {
@@ -33,6 +34,12 @@ void APinballCharacter::PossessedBy(AController* NewController)
 void APinballCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	checkf(EnhancedInputComponent, TEXT("Could not get enhanced input component."));
+
+	if (InputActions.Move)
+		EnhancedInputComponent->BindAction(InputActions.Move, ETriggerEvent::Triggered, this, &APinballCharacter::Move);
 }
 
 void APinballCharacter::BeginPlay()
@@ -47,6 +54,8 @@ void APinballCharacter::Move(const FInputActionValue& InputActionValue)
 		FVector Force = FVector(InputActionValue.Get<FVector2D>(), 0) * MovementInputScale;
 
 		PhysicsBody->AddForce(Force);
+
+		UE_LOG(LogTemp, Display, TEXT("APinballCharacter move"));
 	}
 }
 
